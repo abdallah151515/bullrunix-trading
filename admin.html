@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BullRuniX ADMIN</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif}
+body{background:#000;color:#fff;min-height:100vh;padding:20px}
+.bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;background:radial-gradient(circle at 20% 30%,#1a0033 0%,transparent 50%),radial-gradient(circle at 80% 70%,#3d001a 0%,transparent 50%),#000}
+.stars{position:fixed;width:100%;height:100%;z-index:-1}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:tw 3s infinite}
+@keyframes tw{0%,100%{opacity:.2}50%{opacity:1}}
+.container{max-width:1400px;margin:0 auto;position:relative;z-index:1}
+h1{text-align:center;font-size:45px;font-weight:900;background:linear-gradient(45deg,#FFD700,#FF0000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:30px;filter:drop-shadow(0 0 20px #FFD700)}
+.card{background:rgba(255,255,255,.05);border:2px solid #FFD700;border-radius:20px;padding:30px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(255,215,0,.2);margin-bottom:25px}
+.login-box{max-width:450px;margin:100px auto}
+.input{width:100%;padding:15px;background:rgba(0,0,0,.6);border:2px solid rgba(255,215,0,.4);border-radius:12px;color:#fff;font-size:16px;margin-top:10px;outline:none}
+.input:focus{border-color:#FFD700;box-shadow:0 0 25px rgba(255,215,0,.5)}
+label{color:#FFD700;font-weight:700;font-size:15px;display:block;margin-top:15px}
+.btn{width:100%;padding:16px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;border:none;border-radius:14px;font-size:18px;font-weight:900;cursor:pointer;transition:.3s;margin-top:12px;box-shadow:0 5px 25px rgba(255,215,0,.5)}
+.btn:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(255,215,0,.7)}
+.btn-red{background:linear-gradient(135deg,#ff4444,#cc0000);color:#fff}
+.btn-blue{background:linear-gradient(135deg,#4488ff,#0044cc);color:#fff}
+.btn-green{background:linear-gradient(135deg,#00ff88,#00cc6a);color:#000}
+.btn-small{padding:10px 20px;font-size:14px;width:auto;margin:2px}
+table{width:100%;border-collapse:collapse;background:rgba(0,0,0,.7);border-radius:14px;overflow:hidden;margin-top:20px}
+th{background:#FFD700;color:#000;padding:14px;text-align:right;font-size:14px}
+td{padding:14px;border-bottom:1px solid rgba(255,255,255,.1);font-size:13px}
+.badge{display:inline-block;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700}
+.badge-on{background:#00ff88;color:#000}.badge-pending{background:#FFD700;color:#000}.badge-vip{background:linear-gradient(135deg,#FFD700,#FFA500);color:#000}.badge-agent{background:#00d4ff;color:#000}
+h3{color:#FFD700;margin:25px 0 15px;font-size:22px}
+.tabs{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:12px 25px;background:rgba(255,255,255,.05);border:2px solid rgba(255,215,0,.3);border-radius:12px;color:#FFD700;cursor:pointer;font-weight:700;transition:.3s}
+.tab.active{background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;border-color:#FFD700}
+.tab:hover{transform:translateY(-2px)}
+.tab-content{display:none}.tab-content.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px}
+.stat-card{background:rgba(255,215,0,.1);border:2px solid #FFD700;border-radius:16px;padding:20px;text-align:center}
+.stat-card h4{color:#888;font-size:14px;margin-bottom:8px}
+.stat-card .num{color:#FFD700;font-size:32px;font-weight:900}
+.error{color:#ff5555;text-align:center;margin:12px 0;font-size:14px;font-weight:700}
+.success{color:#00ff88;text-align:center;margin:12px 0;font-size:14px;font-weight:700}
+.hidden{display:none!important}
+.logout-btn{position:fixed;top:20px;left:20px;z-index:10}
+@media(max-width:768px){.stats{grid-template-columns:repeat(2,1fr)}.tabs{justify-content:center}}
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="stars" id="stars"></div>
+
+<!-- LOGIN PAGE -->
+<div class="container" id="loginPage">
+<div class="login-box">
+<div class="card">
+<h1 style="font-size:36px;margin-bottom:20px">BullRuniX ADMIN</h1>
+<h2 style="text-align:center;margin-bottom:25px;color:#FFD700">تسجيل دخول الأدمن</h2>
+<label>الإيميل</label>
+<input class="input" id="adminEmail" type="email" placeholder="admin@bullrunix.com">
+<label>كلمة السر</label>
+<input class="input" id="adminPass" type="password" placeholder="••••••••">
+<div class="error" id="loginError"></div>
+<button class="btn" onclick="adminLogin()">دخول</button>
+<button class="btn btn-red" style="margin-top:10px" onclick="resetAdminCredentials()">إعادة تعيين بيانات الأدمن</button>
+<p style="color:#ccc;margin-top:12px;font-size:14px">إذا نسيت الإيميل أو كلمة السر، اضغط زر التعيين وسيعود الحساب إلى الوضع الافتراضي.</p>
+</div>
+</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="container hidden" id="adminPanel">
+<button class="btn btn-red logout-btn" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
+<h1>BullRuniX ADMIN PANEL</h1>
+
+<div class="stats">
+<div class="stat-card">
+<h4>طلبات الدفع</h4>
+<div class="num" id="statPending">0</div>
+</div>
+<div class="stat-card">
+<h4>طلبات الوكلاء</h4>
+<div class="num" id="statAgent">0</div>
+</div>
+<div class="stat-card">
+<h4>العملاء المفعلين</h4>
+<div class="num" id="statActive">0</div>
+</div>
+<div class="stat-card">
+<h4>إجمالي المستخدمين</h4>
+<div class="num" id="statTotal">0</div>
+</div>
+</div>
+
+<div class="tabs">
+<div class="tab active" onclick="switchTab('payments',this)">💰 طلبات الدفع</div>
+<div class="tab" onclick="switchTab('agents',this)">🚀 طلبات الوكلاء</div>
+<div class="tab" onclick="switchTab('active',this)">✅ العملاء المفعلين</div>
+<div class="tab" onclick="switchTab('settings',this)">⚙️ الإعدادات</div>
+</div>
+
+<!-- TAB 1: PAYMENTS -->
+<div class="tab-content active" id="tab-payments">
+<div class="card">
+<h3>📥 طلبات الدفع الجديدة</h3>
+<table>
+<thead><tr><th>الاسم</th><th>الايميل</th><th>الباقة</th><th>السعر</th><th>تاريخ الطلب</th><th>ايميل الدفع</th><th>تحكم</th></tr></thead>
+<tbody id="pendingBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- TAB 2: AGENTS -->
+<div class="tab-content" id="tab-agents">
+<div class="card">
+<h3>🚀 طلبات الوكلاء المعتمدين - VIP Broker</h3>
+<table>
+<thead><tr><th>الاسم</th><th>الايميل</th><th>الأيدي</th><th>تاريخ الإرسال</th><th>الحالة</th><th>تحكم</th></tr></thead>
+<tbody id="agentBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- TAB 3: ACTIVE -->
+<div class="tab-content" id="tab-active">
+<div class="card">
+<h3>✅ العملاء المفعلين</h3>
+<table>
+<thead><tr><th>الاسم الكامل</th><th>الايميل</th><th>أيدي الوكيل</th><th>الباقة</th><th>النوع</th><th>تاريخ التفعيل</th><th>الحالة</th><th>التحكم</th></tr></thead>
+<tbody id="activeBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- TAB 4: SETTINGS - تغيير كلمة مرور الأدمن -->
+<div class="tab-content" id="tab-settings">
+<div class="card">
+<h3>⚙️ إعدادات حساب الأدمن</h3>
+<p style="color:#888;margin-bottom:20px">تقدر تغير إيميل وكلمة سر الأدمن من هنا</p>
+<label>الإيميل الحالي</label>
+<input class="input" id="currentAdminEmail" type="email">
+<label>كلمة السر الجديدة</label>
+<input class="input" id="newAdminPass" type="password" placeholder="اتركه فارغ إذا ما تبي تغير">
+<label>تأكيد كلمة السر الجديدة</label>
+<input class="input" id="newAdminPass2" type="password" placeholder="اتركه فارغ إذا ما تبي تغير">
+<div class="error" id="settingsErr"></div>
+<div class="success" id="settingsSucc"></div>
+<button class="btn btn-green" onclick="saveAdminSettings()">💾 حفظ التعديلات</button>
+<button class="btn btn-blue" onclick="exportData()">📤 تصدير البيانات</button>
+</div>
+</div>
+
+</div>
+
+<script>
+// نجوم الخلفية
+for(let i=0;i<100;i++){let s=document.createElement('div');s.className='star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*3+'s';document.getElementById('stars').appendChild(s)}
+
+// بيانات الأدمن - تتخزن في localStorage
+let ADMIN_EMAIL = localStorage.getItem('adminEmail') || 'admin@bullrunix.com';
+let ADMIN_PASS = localStorage.getItem('adminPass') || 'BullRuniX2026@Admin';
+
+let users=[];
+
+// تسجيل دخول الأدمن
+function adminLogin(){
+let email=document.getElementById('adminEmail').value.trim();
+let pass=document.getElementById('adminPass').value;
+let err=document.getElementById('loginError');
+if(email===ADMIN_EMAIL && pass===ADMIN_PASS){
+localStorage.setItem('adminLoggedIn','true');
+document.getElementById('loginPage').classList.add('hidden');
+document.getElementById('adminPanel').classList.remove('hidden');
+loadData();
+loadAdminSettings();
+}else{
+err.textContent='الإيميل أو كلمة السر خاطئة';
+}
+}
+
+function adminLogout(){
+localStorage.removeItem('adminLoggedIn');
+location.reload();
+}
+
+function resetAdminCredentials(){
+if(!confirm('هل تريد إعادة تعيين بيانات الأدمن إلى الافتراضي؟\nسيتم الاحتفاظ ببيانات المستخدمين، فقط سيتم إعادة ضبط دخول الأدمن.')) return;
+localStorage.removeItem('adminEmail');
+localStorage.removeItem('adminPass');
+localStorage.removeItem('adminLoggedIn');
+alert('تمت إعادة التعيين. الإيميل: admin@bullrunix.com\nكلمة السر: BullRuniX2026@Admin');
+location.reload();
+}
+
+// تحقق من تسجيل الدخول
+if(localStorage.getItem('adminLoggedIn')==='true'){
+document.getElementById('loginPage').classList.add('hidden');
+document.getElementById('adminPanel').classList.remove('hidden');
+loadData();
+loadAdminSettings();
+}
+
+function switchTab(tab,el){
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+el.classList.add('active');
+document.getElementById('tab-'+tab).classList.add('active');
+}
+
+function loadData(){
+users=JSON.parse(localStorage.getItem('bullUsers')||'[]');
+let pending=users.filter(u=>u.status==='pending' && u.type==='paid');
+let agents=users.filter(u=>u.status==='agent-pending' && u.type==='agent');
+let active=users.filter(u=>u.status==='active');
+let total=users.length;
+
+// Update Stats
+document.getElementById('statPending').textContent=pending.length;
+document.getElementById('statAgent').textContent=agents.length;
+document.getElementById('statActive').textContent=active.length;
+document.getElementById('statTotal').textContent=total;
+
+// جدول طلبات الدفع
+let pb=document.getElementById('pendingBody');
+pb.innerHTML=pending.length?pending.map(u=>`
+<tr>
+<td>${u.name} ${u.last}</td>
+<td>${u.email}</td>
+<td><span class="badge badge-pending">${u.pkg}</span></td>
+<td>${u.price}$</td>
+<td>${u.pendingAt||'--'}</td>
+<td>${u.payEmail||'--'}</td>
+<td><button class="btn btn-small" onclick="approve('${u.email}')">✓ قبول</button></td>
+</tr>`).join(''):'<tr><td colspan="7" style="text-align:center;color:#888">لا توجد طلبات جديدة</td></tr>';
+
+// جدول طلبات الوكلاء
+let ab=document.getElementById('agentBody');
+ab.innerHTML=agents.length?agents.map(u=>`
+<tr>
+<td>${u.name} ${u.last}</td>
+<td>${u.email}</td>
+<td><span class="badge badge-vip" style="font-family:monospace;font-size:14px">${u.brokerId}</span></td>
+<td>${u.brokerAt||'--'}</td>
+<td><span class="badge badge-pending">⏳ جديد</span></td>
+<td><button class="btn btn-blue btn-small" onclick="approveAgent('${u.email}')">تفعيل VIP</button></td>
+</tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:#888">لا توجد طلبات وكلاء</td></tr>';
+
+// جدول المفعلين
+let actb=document.getElementById('activeBody');
+actb.innerHTML=active.length?active.map(u=>`
+<tr>
+<td>${u.name} ${u.last}</td>
+<td>${u.email}</td>
+<td><span class="badge badge-vip" style="font-family:monospace;font-size:14px">${u.brokerId||'--'}</span></td>
+<td><span class="badge badge-on">${u.pkg}</span></td>
+<td>${u.type==='agent'?'<span class="badge badge-agent">وكيل VIP</span>':'<span class="badge badge-on">مدفوع</span>'}</td>
+<td>${u.activatedAt||'--'}</td>
+<td><span class="badge badge-on">🟢 مفعل</span></td>
+<td><button class="btn btn-red btn-small" onclick="deactivate('${u.email}')">⏸ إيقاف</button></td>
+</tr>`).join(''):'<tr><td colspan="8" style="text-align:center;color:#888">لا يوجد عملاء مفعلين</td></tr>';
+}
+
+function approve(email){
+if(confirm('متأكد تبي تقبل هذا العميل؟')){
+let u=users.find(x=>x.email===email);
+u.status='active';
+u.activatedAt=new Date().toLocaleString('ar-EG');
+localStorage.setItem('bullUsers',JSON.stringify(users));
+alert('تم قبول '+u.name+' بنجاح ✓');
+loadData();
+}
+}
+
+function approveAgent(email){
+let u=users.find(x=>x.email===email);
+if(confirm('تأكدت من الأيدي في Quotex؟\nأيدي الوكيل: '+(u.brokerId||'غير محدد'))){
+u.brokerApproved=true;
+u.status='active';
+u.activatedAt=new Date().toLocaleString('ar-EG');
+localStorage.setItem('bullUsers',JSON.stringify(users));
+alert('تم تفعيل VIP للوكيل '+u.name+' ✓\nأيدي الوكيل: '+(u.brokerId||'غير محدد'));
+loadData();
+}
+}
+
+function deactivate(email){
+if(confirm('متأكد تبي توقف هذا العميل؟')){
+let u=users.find(x=>x.email===email);
+if(u.type==='agent'){
+u.status='agent-pending';
+u.brokerApproved=false;
+}else{
+u.status='pending';
+}
+localStorage.setItem('bullUsers',JSON.stringify(users));
+alert('تم إيقاف العميل');
+loadData();
+}
+}
+
+// تحميل إعدادات الأدمن
+function loadAdminSettings(){
+document.getElementById('currentAdminEmail').value=ADMIN_EMAIL;
+}
+
+// حفظ إعدادات الأدمن الجديدة
+function saveAdminSettings(){
+let newEmail=document.getElementById('currentAdminEmail').value.trim();
+let newPass=document.getElementById('newAdminPass').value;
+let newPass2=document.getElementById('newAdminPass2').value;
+let err=document.getElementById('settingsErr');
+let succ=document.getElementById('settingsSucc');
+
+err.textContent='';
+succ.textContent='';
+
+if(!newEmail){
+err.textContent='الإيميل مطلوب';
+return;
+}
+
+if(newPass && newPass!==newPass2){
+err.textContent='كلمة السر غير متطابقة';
+return;
+}
+
+ADMIN_EMAIL=newEmail;
+localStorage.setItem('adminEmail',newEmail);
+
+if(newPass){
+ADMIN_PASS=newPass;
+localStorage.setItem('adminPass',newPass);
+}
+
+succ.textContent='✅ تم حفظ التعديلات بنجاح';
+setTimeout(()=>{succ.textContent=''},3000);
+}
+
+setInterval(()=>{if(localStorage.getItem('adminLoggedIn')==='true')loadData()},3000);
+</script>
+</body>
+</html>
